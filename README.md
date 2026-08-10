@@ -1,59 +1,100 @@
-# Containers Starter
+# containers-template
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/cloudflare/templates/tree/main/containers-template)
-
-![Containers Template Preview](https://imagedelivery.net/_yJ02hpOMj_EnGvsU2aygw/5aba1fb7-b937-46fd-fa67-138221082200/public)
-
-<!-- dash-content-start -->
+![Node](https://img.shields.io/badge/node-20+-green) ![Docker](https://img.shields.io/badge/docker-ready-blue)
 
 This is a [Container](https://developers.cloudflare.com/containers/) starter template.
 
-It demonstrates basic Container configuration, launching and routing to individual container, load balancing over multiple container, running basic hooks on container status changes.
+## Table of Contents
 
-<!-- dash-content-end -->
+- [Overview](#overview)
+- [Quick Start](#quick-start)
+- [Model Routing](#model-routing)
+- [Project Layout](#project-layout)
+- [Development](#development)
+- [Related Repositories](#related-repositories)
 
-Outside of this repo, you can start a new project with this template using [C3](https://developers.cloudflare.com/pages/get-started/c3/) (the `create-cloudflare` CLI):
+## Overview
 
-```bash
-npm create cloudflare@latest -- --template=cloudflare/templates/containers-template
-```
+This is a [Container](https://developers.cloudflare.com/containers/) starter template.
 
-## Getting Started
+| | |
+|---|---|
+| **Stack** | node |
+| **Frameworks** | docker, hono |
+| **Tests** | none detected |
+| **Commits** | 2 |
+| **Last activity** | 2026-08-10 |
+| **Visibility** | public |
 
-First, run:
+## Quick Start
+
+### Install
 
 ```bash
 npm install
-# or
-yarn install
-# or
-pnpm install
-# or
-bun install
 ```
 
-Then run the development server (using the package manager of your choice):
+### Run
 
 ```bash
 npm run dev
+npm start
 ```
 
-Open [http://localhost:8787](http://localhost:8787) with your browser to see the result.
+## Model Routing
 
-You can start editing your Worker by modifying `src/index.ts` and you can start
-editing your Container by editing the content of `container_src`.
+Agent work in this repo routes through Azure AI Foundry. See [`AGENTS.md`](./AGENTS.md)
+for the full contract.
 
-## Deploying To Production
+| Purpose | Deployment | Endpoint |
+|---|---|---|
+| Default / general | `gpt-5.6-sol` | `/openai/v1/chat/completions` |
+| Deep reasoning | `claude-opus-5` | `/openai/v1/responses` **only** |
+| Embeddings | `text-embedding-3-small` | `/openai/v1/embeddings` |
 
-| Command          | Action                                |
-| :--------------- | :------------------------------------ |
-| `npm run deploy` | Deploy your application to Cloudflare |
+```bash
+export AZURE_FOUNDRY_API_KEY=...        # never commit this
+export AZURE_FOUNDRY_BASE_URL=https://<resource>.openai.azure.com/openai/v1
+```
 
-## Learn More
+> **Gotcha:** Claude deployments on Azure return `404 api_not_supported` on
+> `/chat/completions`. They answer **only** via the Responses API.
 
-To learn more about Containers, take a look at the following resources:
+## Project Layout
 
-- [Container Documentation](https://developers.cloudflare.com/containers/) - learn about Containers
-- [Container Class](https://github.com/cloudflare/containers) - learn about the Container helper class
+```
+AGENTS.md
+Dockerfile
+LICENSE
+README.md
+container_src/
+package-lock.json
+package.json
+src/
+tsconfig.json
+worker-configuration.d.ts
+wrangler.jsonc
+```
 
-Your feedback and contributions are welcome!
+## Development
+
+```bash
+# lint / format before committing
+npm run lint
+
+# run the CI check locally
+gh workflow run hermes-azure-check.yml
+```
+
+Secrets live in environment variables and CI secrets — never in tracked files.
+
+## Related Repositories
+
+Part of a 84-repository workspace sharing one agentic contract:
+
+- **[agentic-harness](https://github.com/sahiixx/agentic-harness)** — patterns, contracts, and reference implementations
+- `AGENTS.md` in every repo pins identical model routing
+
+---
+
+<sub>README maintained by the agentic harness · last regenerated 2026-08-10</sub>
